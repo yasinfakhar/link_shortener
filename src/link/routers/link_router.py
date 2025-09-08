@@ -84,9 +84,13 @@ async def get_link(short_code: str, db: AsyncSession = Depends(get_db)):
         if not (original_url.startswith('http://') or original_url.startswith('https://')):
             original_url = f'http://{original_url}'
             
+        # Use permanent redirect for images, temporary redirect for other URLs
+        is_image = any(original_url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'])
+        redirect_status = status.HTTP_301_MOVED_PERMANENTLY if is_image else status.HTTP_307_TEMPORARY_REDIRECT
+            
         return RedirectResponse(
             url=original_url,
-            status_code=status.HTTP_307_TEMPORARY_REDIRECT
+            status_code=redirect_status
         )
     except HTTPException:
         raise
