@@ -43,6 +43,7 @@ class LinkOutput(BaseModel):
 
 class TextProcessInput(BaseModel):
     text: str = Field(..., description="Text containing URLs to be shortened")
+    base_url: str = Field("http://localhost:8005", description="Base URL for short links")
 
 
 class ProcessedTextOutput(BaseModel):
@@ -99,7 +100,6 @@ def _extract_urls(text: str) -> List[str]:
 async def process_text(
     input: TextProcessInput,
     db: AsyncSession = Depends(get_db),
-    base_url: str = "http://localhost:8005",
     user_id: str = Depends(authenticate_user)
 ):
     """
