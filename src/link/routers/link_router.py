@@ -129,13 +129,13 @@ async def process_text(
                     preferred_code=None
                 )
                 # Build the shortened URL
-                short_url = f"{base_url}/l/{link.short_code}"
+                short_url = f"{input.base_url}/l/{link.short_code}"
                 shortened_links[url] = short_url
                 # Replace all occurrences of this URL in the text
                 processed_text = processed_text.replace(url, short_url)
             except Exception as e:
                 # If shortening fails for a URL, keep the original
-                _logger.warning(f"Failed to shorten URL {url}: {str(e)}")
+                print(f"Failed to shorten URL {url}: {str(e)}")
                 continue
 
         return global_response(ProcessedTextOutput(
@@ -144,7 +144,7 @@ async def process_text(
         ))
 
     except Exception as e:
-        _logger.error(f"Error processing text: {str(e)}", exc_info=True)
+        print(f"Error processing text: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while processing the text"
