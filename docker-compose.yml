@@ -1,7 +1,6 @@
 version: "3.9"
 
 services:
-
   postgres:
     image: postgres:15.7-alpine
     restart: always
@@ -12,26 +11,27 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
-      - proacecrm_network
+      - link_shortener_network
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   api:
     build: .
     restart: always
+    depends_on:
+      - postgres
     environment:
       MODULE_NAME: src.main
     volumes:
       - .:/app
     ports:
-      - "0.0.0.0:8000:8000"
+      - "0.0.0.0:8005:8005"
     networks:
-      - proacecrm_network
+      - link_shortener_network
 
 volumes:
   pg_data:
   qdrant_data:
 
 networks:
-  proacecrm_network:
-    external: true
+  link_shortener_network:
