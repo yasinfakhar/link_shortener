@@ -73,9 +73,28 @@ async def create_link(
 async def get_link(short_code: str, db: AsyncSession = Depends(get_db)):
     try:
         link = await service.get_by_code(db, short_code)
-        return RedirectResponse(url=link.original_url)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        if not link:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Link not found"
+            )
+        
+        # Ensure the URL has a scheme
+        original_url = link.original_url
+        if not (original_url.startswith('http://') or original_url.startswith('https://')):
+            original_url = f'http://{original_url}'
+            
+        return RedirectResponse(
+            url=original_url,
+            status_code=status.HTTP_307_TEMPORARY_REDIRECT
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
 
 
 @router.get("", response_model=GlobalResponse[List[LinkOutput], dict])
