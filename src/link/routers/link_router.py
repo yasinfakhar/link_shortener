@@ -144,6 +144,11 @@ async def process_text(
         processed_text = input.text
 
         for url in set(urls):  # Use set to process each unique URL only once
+
+            # skip already shortened links
+            if "acecrm.ca" in url:
+                continue
+            
             try:
                 # Create short link
                 link = await service.create_link(
