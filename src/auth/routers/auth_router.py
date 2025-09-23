@@ -31,45 +31,45 @@ class AuthOutput(BaseModel):
     access_token: str
 
 
-@router.post(
-    "/register",
-    response_model=GlobalResponse[AuthOutput, dict],
-    summary="User Registration",
-    description="Register a new user with username and password.",
-    responses={
-        409: {
-            "model": ExceptionResponse,
-            "description": "User or username already exists"
-        },
-        400: {
-            "model": ExceptionResponse,
-            "description": "Bad request"
-        },
-    }
-)
-async def register(input: RegisterInput, db: AsyncSession = Depends(get_db)):
-    """
-    Register a new user.
+# @router.post(
+#     "/register",
+#     response_model=GlobalResponse[AuthOutput, dict],
+#     summary="User Registration",
+#     description="Register a new user with username and password.",
+#     responses={
+#         409: {
+#             "model": ExceptionResponse,
+#             "description": "User or username already exists"
+#         },
+#         400: {
+#             "model": ExceptionResponse,
+#             "description": "Bad request"
+#         },
+#     }
+# )
+# async def register(input: RegisterInput, db: AsyncSession = Depends(get_db)):
+#     """
+#     Register a new user.
 
-    - **username**: User's username
-    - **password**: User's password
-    """
-    try:
-        user = await auth.register(input, db)
+#     - **username**: User's username
+#     - **password**: User's password
+#     """
+#     try:
+#         user = await auth.register(input, db)
 
-        payload = {"id": str(user.id)}
-        token = generate_access_token(data=payload)
-        return global_response(
-            {
-                "access_token": token,
-            }
-        )
-    except AlreadyExistsError as e:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail=str(e))
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+#         payload = {"id": str(user.id)}
+#         token = generate_access_token(data=payload)
+#         return global_response(
+#             {
+#                 "access_token": token,
+#             }
+#         )
+#     except AlreadyExistsError as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_409_CONFLICT, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.post(
     "/login",
